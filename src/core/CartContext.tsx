@@ -16,7 +16,7 @@ export interface CartItem {
 interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (id: string) => void;
+  removeFromCart: (id: string, options?: { size?: string; addons?: string[]; specialRequest?: string }) => void;
   updateCartItem: (id: string, changes: Partial<CartItem>) => void;
 }
 
@@ -48,8 +48,19 @@ export function CartProvider({ children }: { children: any }) {
     });
   };
 
-  const removeFromCart = (id: string) => {
-    setCart(prev => prev.filter(i => i.id !== id));
+  const removeFromCart = (id: string, options?: { size?: string; addons?: string[]; specialRequest?: string }) => {
+    setCart(prev => prev.filter(i => {
+      if (i.id !== id) return true;
+      // If options provided, match customisation
+      if (options) {
+        if (options.size && i.size !== options.size) return true;
+        if (options.addons && JSON.stringify(i.addons) !== JSON.stringify(options.addons)) return true;
+        if (options.specialRequest && i.specialRequest !== options.specialRequest) return true;
+        return false;
+      }
+      // If no options, remove all with id
+      return false;
+    }));
   };
 
   const updateCartItem = (id: string, changes: Partial<CartItem>) => {

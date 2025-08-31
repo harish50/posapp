@@ -29,6 +29,12 @@ export default function Cart() {
                   Qty: {item.quantity} &nbsp;|&nbsp; {item.price * item.quantity}
                 </div>
               </div>
+              <button
+                style={{ marginLeft: '1rem', background: '#e53935', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600 }}
+                onClick={() => cartCtx?.removeFromCart(item.id, { size: item.size, addons: item.addons, specialRequest: item.specialRequest })}
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>

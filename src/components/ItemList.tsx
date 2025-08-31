@@ -15,24 +15,21 @@ export default function ItemList() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalItem, setModalItem] = useState<Item | null>(null);
   const [modalState, setModalState] = useState<any>({});
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const loadItems = async () => {
-      const offlineItems = await offlineStore.loadItems();
-      setItems(offlineItems);
+      if (search.trim() === "") {
+        const offlineItems = await offlineStore.loadItems();
+        setItems(offlineItems);
+      } else {
+        const matched = await offlineStore.searchItemsByName(search);
+        console.log(matched, search);
+        setItems(matched);
+      }
     };
     loadItems();
-  }, []);
-
-  const handleChange = (itemID: string, field: string, value: any) => {
-    setFormState((prev) => ({
-      ...prev,
-      [itemID]: {
-        ...prev[itemID],
-        [field]: value,
-      },
-    }));
-  };
+  }, [search]);
 
   const openModal = (item: Item) => {
     setModalItem(item);
@@ -63,16 +60,35 @@ export default function ItemList() {
     closeModal();
   };
 
+  const handleSearchChange = (e: any) => {
+    setSearch(e.currentTarget.value);
+    console.log(e.currentTarget.value);
+  };
+
   return (
     <div style={{ padding: "2rem", maxWidth: 1200, margin: "0 auto" }}>
       <h2 style={{ fontSize: "2rem", marginBottom: "2rem", textAlign: "center" }}>Items</h2>
+      <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+        <input
+          type="text"
+          value={search}
+          onChange={handleSearchChange}
+          placeholder="Search items by name..."
+          style={{
+            padding: "0.7rem 1.2rem",
+            borderRadius: "8px",
+            border: "1px solid #cfd8dc",
+            fontSize: "1.1rem",
+            width: "60%"
+          }}
+        />
+      </div>
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(3, 1fr)",
         gap: "2rem",
       }}>
         {items.map((item) => {
-          const state = formState[item.itemID] || {};
           return (
             <div key={item.itemID} className="product-card">
               <img src={item.imageUrl} alt={item.itemName} />

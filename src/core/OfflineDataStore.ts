@@ -54,4 +54,20 @@ export class OfflineDataStore {
     const db = await dbPromise;
     return (await db.get("cart", "current")) ?? [];
   }
+
+  async searchItemsByName(name: string): Promise<Item[]> {
+    const db = await dbPromise;
+    const tx = db.transaction("items", "readonly");
+    const index = tx.store.index("by-name");
+    const lower = name.toLowerCase();
+    const results: Item[] = [];
+    let cursor = await index.openCursor();
+    while (cursor) {
+      if (cursor.value?.itemName.toLowerCase().includes(lower)) {
+        results.push(cursor.value);
+      }
+      cursor = await cursor.continue();
+    }
+    return results;
+  }
 }
