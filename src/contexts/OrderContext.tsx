@@ -7,12 +7,12 @@ import type { Order } from '../core/types.ts';
 interface OrderContextType {
   orders: Order[];
   orderStatus: { [orderId: string]: string };
-  placeOrder: (order: Order) => Promise<void>;
-  updateOrderStatus: (orderId: string, status: string) => Promise<void>;
-  syncOrders: () => Promise<void>;
+  placeOrder?: (order: Order) => Promise<void>;
+  updateOrderStatus?: (orderId: string, status: string) => Promise<void>;
+  syncOrders?: () => Promise<void>;
 }
 
-export const OrderContext = createContext<OrderContextType | undefined>(undefined);
+export const OrderContext = createContext<OrderContextType >({orders: [], orderStatus: {}});
 
 export function OrderProvider({ children }: { children: any }) {
   const [orders, setOrders] = useState<Order[]>([]);

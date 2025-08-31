@@ -23,16 +23,16 @@ export class OfflineDataStore {
     await tx.done;
   }
 
+  async syncItems(): Promise<void> {
+    const res = await fetch('/api/Restaurant/items');
+    const data = await res.json()
+    await this.saveItems(data)
+  }
+
   async loadItems(): Promise<Item[]> {
     if(this.isOnline) {
-      try {
-        const res = await fetch('/api/Restaurant/items');
-        const data = await res.json()
-        this.saveItems(data)
-        return data;
-      } catch {
-        return await this.getItems()
-      }
+      await this.syncItems();
+      return this.getItems();
     } else {
       return await this.getItems()
     }

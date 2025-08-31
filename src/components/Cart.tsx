@@ -20,7 +20,7 @@ export default function Cart() {
       lastModified: Date.now(),
       createdAt: new Date().toISOString(),
     };
-    await orderCtx.placeOrder(order);
+    if(orderCtx.placeOrder) await orderCtx?.placeOrder(order);
     if (cartCtx) {
       cartCtx.cart.forEach(item => cartCtx.removeFromCart(item.id, {
         size: item.size,

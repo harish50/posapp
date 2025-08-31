@@ -28,6 +28,9 @@ export default function ItemList() {
         setItems(matched);
       }
     };
+    window.addEventListener("online", ()=>{
+      loadItems();
+    });
     loadItems();
   }, [search]);
 
@@ -126,8 +129,7 @@ export default function ItemList() {
               </div>
             </label>
             <label className="modal-label">
-              Special Request:
-              <input
+              Special Request:<input
                 type="text"
                 value={modalState.specialRequest ?? ""}
                 onChange={e => handleModalChange("specialRequest", e.currentTarget.value)}

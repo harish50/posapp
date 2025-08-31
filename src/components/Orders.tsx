@@ -2,20 +2,20 @@ import { useContext } from "preact/hooks";
 import { OrderContext } from "../contexts/OrderContext.tsx";
 
 export default function Orders() {
-  const orderCtx = useContext(OrderContext);
+  const {orders, orderStatus} = useContext(OrderContext);
 
   return (
     <div className="orders-container">
       <h3 className="orders-title">Orders</h3>
-      {orderCtx?.orders.length === 0 ? (
+      {orders.length === 0 ? (
         <div className="orders-empty">No orders yet.</div>
       ) : (
         <ul className="orders-list">
-          {orderCtx?.orders.map(order => (
+          {orders.map(order => (
             <li key={order.id} className="orders-item">
               <div className="orders-id">Order #{order.id}</div>
               <div className="orders-status">
-                Status: <span className="orders-status-value">{orderCtx.orderStatus[order.id]}</span>
+                Status: <span className="orders-status-value">{orderStatus[order.id]}</span>
               </div>
               <div className="orders-items">
                 {order.items.map((item, index) => (
