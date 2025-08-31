@@ -2,6 +2,29 @@
 
 This is a simple Point-of-Sale (POS) application built with Preact. It allows users to browse items, add them to a cart, customize orders, and manage orders.
 
+## How to Run
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+2. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+3. **Open your browser:**
+
+   Visit [http://localhost:5173](http://localhost:5173) to use the app.
+
+4. **Build for production:**
+   ```bash
+   npm run build
+   ```
+5. **Preview the production build:**
+   ```bash
+   npm run preview
+   ```
+
 ## Features
 
 - **Item List:** Browse available products, search by name, and view details.
@@ -33,4 +56,3 @@ This is a simple Point-of-Sale (POS) application built with Preact. It allows us
 You can easily add new products, sizes, or add-ons by updating the relevant data sources and components.
 
 ---
-
