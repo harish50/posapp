@@ -24,7 +24,7 @@ export default function ItemList(){
         gap: '2rem',
       }}>
         {items.map((item) => (
-          <div key={item.itemId} style={{
+          <div key={item.itemID} style={{
             background: '#fff',
             borderRadius: '12px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.08)',

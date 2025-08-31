@@ -11,7 +11,7 @@ export interface POSDB extends DBSchema {
 
 export const dbPromise = openDB<POSDB>('pos-db', 1, {
   upgrade(db) {
-    const itemStores = db.createObjectStore("items", {keyPath: "id"});
-    itemStores.createIndex("by-name", "name");
+    const itemStores = db.createObjectStore("items", {keyPath: "itemID"});
+    itemStores.createIndex("by-name", "itemName");
   }
 })

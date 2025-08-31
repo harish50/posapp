@@ -18,7 +18,7 @@ export class OfflineDataStore {
     const db = await dbPromise;
     const tx = db.transaction("items", "readwrite");
     for (const item of items) {
-      tx.store.put(item);
+      await tx.store.put(item);
     }
     await tx.done;
   }
@@ -26,7 +26,8 @@ export class OfflineDataStore {
   async loadItems(): Promise<Item[]> {
     if(this.isOnline) {
       try {
-        const res = await fetch('/api/Restaurant/items');        const data = await res.json()
+        const res = await fetch('/api/Restaurant/items');
+        const data = await res.json()
         this.saveItems(data)
         return data;
       } catch {
