@@ -1,5 +1,5 @@
 import {dbPromise} from "../core/db.ts";
-import type {Item} from "../core/types.ts";
+import type {Item, Order} from "../core/types.ts";
 
 export class OfflineDataStore {
   isOnline = navigator.onLine;
@@ -72,6 +72,9 @@ export class OfflineDataStore {
   }
 
   async saveOrder(order: any): Promise<void> {
+    order.lastModified = Date.now();
+    order.syncStatus = "pending";
+    order.synced = "false";
     const db = await dbPromise;
     const tx = db.transaction("orders", "readwrite");
     await tx.store.put(order);
@@ -87,22 +90,65 @@ export class OfflineDataStore {
   }
 
   async syncOrders(): Promise<void> {
+    await this.pullFromServer();
+    await this.syncOrdersToServer()
+  }
+
+  async pullFromServer(): Promise<void> {
+    let lastFetchedAt = localStorage.getItem("lastFetchedAt") ?? 0;
     const db = await dbPromise;
-    const unsyncedOrders = await db.getAllFromIndex("orders", "by-synced", "false");
-    for (const order of unsyncedOrders) {
+    try {
+      const res = await fetch(`/api/orders?since=${lastFetchedAt}`);
+      const remoteOrders = await res.json();
+      const tx = db.transaction("orders", "readwrite");
+      const ordersStore = tx.objectStore("orders");
+
+      for (const remoteOrder of remoteOrders) {
+        const localOrder = await ordersStore.get(remoteOrder.id);
+        if (!localOrder) {
+          ordersStore.put(remoteOrder)
+        } else {
+          const order = await this.resolveConflicts(localOrder, remoteOrder);
+          ordersStore.put(order)
+        }
+        if (remoteOrder.lastModified > lastFetchedAt) {
+          lastFetchedAt = remoteOrder.lastModified;
+        }
+      }
+
+      await tx.done;
+    } catch {
+      return;
+    }
+  }
+
+  async resolveConflicts(localOrder: Order, remoteOrder: Order): Promise<Order> {
+    if (remoteOrder.lastModified > localOrder.lastModified) {
+      return remoteOrder;
+    } else if (remoteOrder.lastModified < localOrder.lastModified) {
+      localOrder.synced = "false";
+      return localOrder;
+    }
+    return remoteOrder;
+  }
+
+  async syncOrdersToServer(): Promise<void> {
+    const db = await dbPromise;
+    const pendingOrders = await db.getAllFromIndex("orders", "by-synced", "false");
+    for (const localOrder of pendingOrders) {
       try {
         await fetch('/api/orders', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(order)
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(localOrder)
         });
-        order.synced = "true";
-        order.status = 'Preparing';
-        const updateTx = db.transaction("orders", "readwrite");
-        await updateTx.store.put(order);
-        await updateTx.done;
-      } catch (e) {
-        console.error("Sync failed for order", order.id, e);
+        localOrder.synced = "true";
+        localOrder.syncStatus = "synced";
+        localOrder.lastSynced = Date.now();
+        await db.put("orders", localOrder, localOrder.id);
+      } catch {
+        localOrder.syncStatus = "error";
+        await db.put("orders", localOrder, localOrder.id);
       }
     }
   }

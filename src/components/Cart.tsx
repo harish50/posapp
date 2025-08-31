@@ -16,10 +16,18 @@ export default function Cart() {
       items: cart,
       status: "Ordered",
       synced: "false",
+      syncStatus: "pending",
+      lastModified: Date.now(),
       createdAt: new Date().toISOString(),
     };
     await orderCtx.placeOrder(order);
-    if (cartCtx) cartCtx.cart.forEach(item => cartCtx.removeFromCart(item.id, { size: item.size, addons: item.addons, specialRequest: item.specialRequest }));
+    if (cartCtx) {
+      cartCtx.cart.forEach(item => cartCtx.removeFromCart(item.id, {
+        size: item.size,
+        addons: item.addons,
+        specialRequest: item.specialRequest
+      }));
+    }
   };
 
   return (
@@ -46,8 +54,21 @@ export default function Cart() {
                 </div>
               </div>
               <button
-                style={{ marginLeft: '1rem', background: '#e53935', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.5rem 1rem', cursor: 'pointer', fontWeight: 600 }}
-                onClick={() => cartCtx?.removeFromCart(item.id, { size: item.size, addons: item.addons, specialRequest: item.specialRequest })}
+                style={{
+                  marginLeft: '1rem',
+                  background: '#e53935',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '0.5rem 1rem',
+                  cursor: 'pointer',
+                  fontWeight: 600
+                }}
+                onClick={() => cartCtx?.removeFromCart(item.id, {
+                  size: item.size,
+                  addons: item.addons,
+                  specialRequest: item.specialRequest
+                })}
               >
                 Delete
               </button>
@@ -60,7 +81,16 @@ export default function Cart() {
       </div>
       <div style={{ textAlign: "right", marginTop: "2rem" }}>
         <button
-          style={{ background: '#1976d2', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.7rem 2rem', fontWeight: 600, fontSize: '1.1rem', cursor: 'pointer' }}
+          style={{
+            background: '#1976d2',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.7rem 2rem',
+            fontWeight: 600,
+            fontSize: '1.1rem',
+            cursor: 'pointer'
+          }}
           disabled={cart.length === 0}
           onClick={handleOrder}
         >

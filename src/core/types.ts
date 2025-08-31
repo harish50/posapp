@@ -24,7 +24,10 @@ export interface Order {
   id: string;
   items: CartItem[];
   status: string;
-  synced: string;
+  synced: string; // "true" | "false"
+  syncStatus: string;
+  lastModified: number;
+  lastSynced?: number;
   createdAt: string;
 }
 
