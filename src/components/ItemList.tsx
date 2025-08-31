@@ -66,28 +66,18 @@ export default function ItemList() {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: 1200, margin: "0 auto" }}>
-      <h2 style={{ fontSize: "2rem", marginBottom: "2rem", textAlign: "center" }}>Items</h2>
-      <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+    <div className="item-list-container">
+      <h2 className="item-list-title">Items</h2>
+      <div className="item-list-search">
         <input
           type="text"
           value={search}
           onChange={handleSearchChange}
           placeholder="Search items by name..."
-          style={{
-            padding: "0.7rem 1.2rem",
-            borderRadius: "8px",
-            border: "1px solid #cfd8dc",
-            fontSize: "1.1rem",
-            width: "60%"
-          }}
+          className="item-search-input"
         />
       </div>
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: "2rem",
-      }}>
+      <div className="item-list-grid">
         {items.map((item) => {
           return (
             <div key={item.itemID} className="product-card">
@@ -103,19 +93,23 @@ export default function ItemList() {
       </div>
       <Modal open={modalOpen} onClose={closeModal}>
         {modalItem && (
-          <div>
-            <h3 style={{ marginBottom: '1rem', color: '#1a237e' }}>Customise {modalItem.itemName}</h3>
-            <label style={{ display: "block", marginBottom: "0.5rem" }}>
+          <div className="modal-content">
+            <h3 className="modal-title">Customise {modalItem.itemName}</h3>
+            <label className="modal-label">
               Size:
-              <select value={modalState.size || SIZES[0]} onChange={e => handleModalChange("size", e.currentTarget.value)} style={{ marginLeft: "0.5rem" }}>
+              <select
+                value={modalState.size || SIZES[0]}
+                onChange={e => handleModalChange("size", e.currentTarget.value)}
+                className="modal-select"
+              >
                 {SIZES.map(size => <option key={size} value={size}>{size}</option>)}
               </select>
             </label>
-            <label style={{ display: "block", marginBottom: "0.5rem" }}>
+            <label className="modal-label">
               Add-ons:
-              <div>
+              <div className="modal-addons">
                 {ADDONS.map(addon => (
-                  <label key={addon} style={{ marginRight: "1rem" }}>
+                  <label key={addon} className="modal-addon-label">
                     <input
                       type="checkbox"
                       checked={modalState.addons?.includes(addon) || false}
@@ -131,16 +125,16 @@ export default function ItemList() {
                 ))}
               </div>
             </label>
-            <label style={{ display: "block", marginBottom: "0.5rem" }}>
+            <label className="modal-label">
               Special Request:
               <input
                 type="text"
                 value={modalState.specialRequest || ""}
                 onChange={e => handleModalChange("specialRequest", e.currentTarget.value)}
-                style={{ marginLeft: "0.5rem", width: "80%" }}
+                className="modal-input"
               />
             </label>
-            <button style={{ marginTop: "1rem" }} onClick={confirmAddToCart}>
+            <button className="modal-add-btn" onClick={confirmAddToCart}>
               Add to Cart
             </button>
           </div>

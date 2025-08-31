@@ -145,10 +145,10 @@ export class OfflineDataStore {
         localOrder.synced = "true";
         localOrder.syncStatus = "synced";
         localOrder.lastSynced = Date.now();
-        await db.put("orders", localOrder, localOrder.id);
+        await db.put("orders", localOrder);
       } catch {
         localOrder.syncStatus = "error";
-        await db.put("orders", localOrder, localOrder.id);
+        await db.put("orders", localOrder);
       }
     }
   }
