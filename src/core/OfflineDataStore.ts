@@ -70,4 +70,50 @@ export class OfflineDataStore {
     }
     return results;
   }
+
+  async saveOrder(order: any): Promise<void> {
+    const db = await dbPromise;
+    const tx = db.transaction("orders", "readwrite");
+    await tx.store.put(order);
+    await tx.done;
+  }
+
+  async loadOrders(): Promise<any[]> {
+    const db = await dbPromise;
+    return await db.getAll("orders");
+  }
+
+  async syncOrders(): Promise<void> {
+    const db = await dbPromise;
+    const tx = db.transaction("orders", "readwrite");
+    const index = tx.store.index("by-synced");
+    let cursor = await index.openCursor(false);
+    while (cursor) {
+      const order = cursor.value;
+      try {
+        await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(order)
+        });
+        order.synced = true;
+        order.status = 'Preparing';
+        await cursor.update(order);
+      } catch (e) {
+        // Leave as unsynced
+      }
+      cursor = await cursor.continue();
+    }
+  }
+
+  async updateOrderStatus(orderId: string, status: string): Promise<void> {
+    const db = await dbPromise;
+    const order = await db.get("orders", orderId);
+    if (order) {
+      order.status = status;
+      const tx = db.transaction("orders", "readwrite");
+      await tx.store.put(order, orderId);
+      await tx.done;
+    }
+  }
 }
