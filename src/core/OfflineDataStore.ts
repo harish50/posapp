@@ -42,4 +42,16 @@ export class OfflineDataStore {
     const db = await dbPromise;
     return db.getAll("items");
   }
+
+  async saveCart(cart: any[]): Promise<void> {
+    const db = await dbPromise;
+    const tx = db.transaction("cart", "readwrite");
+    await tx.store.put(cart, "current");
+    await tx.done;
+  }
+
+  async loadCart(): Promise<any[]> {
+    const db = await dbPromise;
+    return (await db.get("cart", "current")) ?? [];
+  }
 }

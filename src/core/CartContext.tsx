@@ -1,0 +1,64 @@
+import { createContext } from 'preact';
+import { useState, useEffect } from 'preact/hooks';
+import { OfflineDataStore } from './OfflineDataStore';
+
+export interface CartItem {
+  id: string;
+  title: string;
+  price: number;
+  image?: string;
+  size?: string;
+  addons?: string[];
+  specialRequest?: string;
+  quantity: number;
+}
+
+interface CartContextType {
+  cart: CartItem[];
+  addToCart: (item: CartItem) => void;
+  removeFromCart: (id: string) => void;
+  updateCartItem: (id: string, changes: Partial<CartItem>) => void;
+}
+
+export const CartContext = createContext<CartContextType | undefined>(undefined);
+
+export function CartProvider({ children }: { children: any }) {
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const offlineStore = new OfflineDataStore();
+
+  // Load cart from IndexedDB on mount
+  useEffect(() => {
+    offlineStore.loadCart().then((loadedCart) => {
+      if (loadedCart?.length) setCart(loadedCart);
+    });
+  }, []);
+
+  // Save cart to IndexedDB whenever it changes
+  useEffect(() => {
+    offlineStore.saveCart(cart);
+  }, [cart]);
+
+  const addToCart = (item: CartItem) => {
+    setCart(prev => {
+      const existing = prev.find(i => i.id === item.id && i.size === item.size && JSON.stringify(i.addons) === JSON.stringify(item.addons) && i.specialRequest === item.specialRequest);
+      if (existing) {
+        return prev.map(i => i === existing ? { ...i, quantity: i.quantity + item.quantity } : i);
+      }
+      return [...prev, item];
+    });
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart(prev => prev.filter(i => i.id !== id));
+  };
+
+  const updateCartItem = (id: string, changes: Partial<CartItem>) => {
+    setCart(prev => prev.map(i => i.id === id ? { ...i, ...changes } : i));
+  };
+
+  return (
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateCartItem }}>
+      {children}
+    </CartContext.Provider>
+  );
+}
