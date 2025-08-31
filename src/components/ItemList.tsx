@@ -28,9 +28,6 @@ export default function ItemList() {
         setItems(matched);
       }
     };
-    window.addEventListener("online", ()=>{
-      loadItems();
-    });
     loadItems();
   }, [search]);
 

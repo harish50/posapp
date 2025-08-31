@@ -20,7 +20,7 @@ export function App() {
   return (
     <OrderProvider>
       <CartProvider>
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start', maxWidth: 1800, margin: '0 auto' }}>
+        <div className="app-container">
           <div style={{ flex: 2 }}>
             <ItemList/>
           </div>

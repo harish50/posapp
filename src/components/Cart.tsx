@@ -1,11 +1,13 @@
-import {useContext} from "preact/hooks";
+import {useContext, useState} from "preact/hooks";
 import {CartContext} from "../contexts/CartContext.tsx";
 import {OrderContext} from "../contexts/OrderContext.tsx";
 import type {Order} from "../core/types";
+import Modal from "../components/Modal.tsx";
 
 export default function Cart() {
   const cartCtx = useContext(CartContext);
   const orderCtx = useContext(OrderContext);
+  const [cartModalOpen, setCartModalOpen] = useState(false);
   const cart = cartCtx?.cart || [];
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -81,6 +83,17 @@ export default function Cart() {
           Order
         </button>
       </div>
+      {cart?.length > 0 && (
+        <button
+          className="floating-cart-btn"
+          onClick={() => setCartModalOpen(true)}
+        >
+          View Cart ({cart?.length})
+        </button>
+      )}
+      <Modal open={cartModalOpen} onClose={() => setCartModalOpen(false)}>
+        <Cart/>
+      </Modal>
     </div>
   );
 }
