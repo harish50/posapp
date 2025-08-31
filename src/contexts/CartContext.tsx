@@ -1,7 +1,7 @@
 import { createContext } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { OfflineDataStore } from './OfflineDataStore';
-import type { CartItem } from './types';
+import { OfflineDataStore } from '../core/OfflineDataStore.ts';
+import type { CartItem } from '../core/types.ts';
 
 interface CartContextType {
   cart: CartItem[];

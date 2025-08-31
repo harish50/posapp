@@ -1,6 +1,6 @@
 import {useContext} from "preact/hooks";
-import {CartContext} from "../core/CartContext";
-import {OrderContext} from "../core/OrderContext";
+import {CartContext} from "../contexts/CartContext.tsx";
+import {OrderContext} from "../contexts/OrderContext.tsx";
 import type {Order} from "../core/types";
 
 export default function Cart() {
@@ -38,7 +38,7 @@ export default function Cart() {
       ) : (
         <ul className="cart-list">
           {cart.map((item) => (
-            <li key={item.id} className="cart-item">
+            <li key={`${item.id}-${item.size}`} className="cart-item">
               <img src={item.image} alt={item.title}/>
               <div className="cart-item-details">
                 <div className="cart-title">{item.title}</div>

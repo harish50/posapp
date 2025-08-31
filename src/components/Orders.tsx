@@ -1,5 +1,5 @@
 import { useContext } from "preact/hooks";
-import { OrderContext } from "../core/OrderContext";
+import { OrderContext } from "../contexts/OrderContext.tsx";
 
 export default function Orders() {
   const orderCtx = useContext(OrderContext);
@@ -18,8 +18,8 @@ export default function Orders() {
                 Status: <span className="orders-status-value">{orderCtx.orderStatus[order.id]}</span>
               </div>
               <div className="orders-items">
-                {order.items.map((item) => (
-                  <div key={item.id}>
+                {order.items.map((item, index) => (
+                  <div key={index}>
                     {item.title} x{item.quantity} ({item.size})
                     {item.addons && item.addons.length > 0 && ` | Add-ons: ${item.addons.join(', ')}`}
                     {item.specialRequest && ` | Special: ${item.specialRequest}`}

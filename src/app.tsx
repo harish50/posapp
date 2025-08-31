@@ -1,8 +1,8 @@
 import './app.css'
 import ItemList from "./components/ItemList.tsx";
-import { CartProvider } from "./core/CartContext";
+import { CartProvider } from "./contexts/CartContext.tsx";
 import Cart from "./components/Cart";
-import { OrderProvider } from "./core/OrderContext";
+import { OrderProvider } from "./contexts/OrderContext.tsx";
 import Orders from "./components/Orders";
 
 export function App() {

@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "preact/hooks";
 import { OfflineDataStore } from "../core/OfflineDataStore";
-import { CartContext } from "../core/CartContext";
+import { CartContext } from "../contexts/CartContext.tsx";
 import type { Item } from "../core/types.ts";
 import Modal from "./Modal";
 
@@ -129,7 +129,7 @@ export default function ItemList() {
               Special Request:
               <input
                 type="text"
-                value={modalState.specialRequest || ""}
+                value={modalState.specialRequest ?? ""}
                 onChange={e => handleModalChange("specialRequest", e.currentTarget.value)}
                 className="modal-input"
               />
