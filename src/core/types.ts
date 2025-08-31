@@ -24,6 +24,22 @@ export interface Order {
   id: string;
   items: CartItem[];
   status: string;
-  synced: boolean;
+  synced: string;
   createdAt: string;
+}
+
+export type PrintDestination = "kitchen" | "bar" | "receipt";
+export type PrintStatus = "pending" | "printing" | "success" | "failed";
+export type PrintPriority = "high" | "normal" | "low";
+
+export interface PrintJob {
+  id: string;
+  orderId: string;
+  destination: PrintDestination;
+  status: PrintStatus;
+  priority: PrintPriority;
+  attempts: number;
+  createdAt: string;
+  lastError?: string;
+  templateType: string;
 }

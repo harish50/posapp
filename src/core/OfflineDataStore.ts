@@ -76,6 +76,9 @@ export class OfflineDataStore {
     const tx = db.transaction("orders", "readwrite");
     await tx.store.put(order);
     await tx.done;
+    if (this.isOnline) {
+      this.syncOrders();
+    }
   }
 
   async loadOrders(): Promise<any[]> {
@@ -85,24 +88,22 @@ export class OfflineDataStore {
 
   async syncOrders(): Promise<void> {
     const db = await dbPromise;
-    const tx = db.transaction("orders", "readwrite");
-    const index = tx.store.index("by-synced");
-    let cursor = await index.openCursor(false);
-    while (cursor) {
-      const order = cursor.value;
+    const unsyncedOrders = await db.getAllFromIndex("orders", "by-synced", "false");
+    for (const order of unsyncedOrders) {
       try {
         await fetch('/api/orders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(order)
         });
-        order.synced = true;
+        order.synced = "true";
         order.status = 'Preparing';
-        await cursor.update(order);
+        const updateTx = db.transaction("orders", "readwrite");
+        await updateTx.store.put(order);
+        await updateTx.done;
       } catch (e) {
-        // Leave as unsynced
+        console.error("Sync failed for order", order.id, e);
       }
-      cursor = await cursor.continue();
     }
   }
 

@@ -1,6 +1,7 @@
 import { createContext } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { OfflineDataStore } from './OfflineDataStore';
+import { PrintJobManager } from "./PrintJobManager";
 import type { Order } from './types';
 
 interface OrderContextType {
@@ -17,6 +18,7 @@ export function OrderProvider({ children }: { children: any }) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [orderStatus, setOrderStatus] = useState<{ [orderId: string]: string }>({});
   const offlineStore = new OfflineDataStore();
+  const printManager = new PrintJobManager();
 
   useEffect(() => {
     const loadOrders = async () => {
@@ -36,15 +38,17 @@ export function OrderProvider({ children }: { children: any }) {
     setOrders(prev => [...prev, order]);
     setOrderStatus(prev => ({ ...prev, [order.id]: order.status }));
     await offlineStore.saveOrder(order);
-    if (offlineStore.isOnline) {
-      await syncOrders();
-    }
+    printManager.addJob(order.id, "kitchen", "high", "kitchen");
+    printManager.addJob(order.id, "receipt", "normal", "receipt");
   };
 
   const updateOrderStatus = async (orderId: string, status: string) => {
     setOrderStatus(prev => ({ ...prev, [orderId]: status }));
     await offlineStore.updateOrderStatus(orderId, status);
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
+    if (status === "Preparing") {
+      printManager.addJob(orderId, "bar", "high", "bar");
+    }
   };
 
   const syncOrders = async () => {

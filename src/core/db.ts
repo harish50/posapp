@@ -1,5 +1,5 @@
 import {type DBSchema, openDB} from "idb";
-import type {Item, CartItem, Order} from "./types";
+import type {Item, CartItem, Order, PrintJob} from "./types";
 
 export interface POSDB extends DBSchema {
   items: {
@@ -15,7 +15,11 @@ export interface POSDB extends DBSchema {
   orders: {
     key: string;
     value: Order;
-    indexes: { "by-status": string; "by-createdAt": string; "by-synced": boolean };
+    indexes: { "by-status": string; "by-createdAt": string; "by-synced": string };
+  },
+  printJobs: {
+    key: string;
+    value: PrintJob[];
   }
 }
 
@@ -31,6 +35,9 @@ export const dbPromise = openDB<POSDB>('pos-db', 1, {
       orderStore.createIndex("by-status", "status");
       orderStore.createIndex("by-createdAt", "createdAt");
       orderStore.createIndex("by-synced", "synced", { unique: false } );
+    }
+    if (!db.objectStoreNames.contains("printJobs")) {
+      db.createObjectStore("printJobs");
     }
   }
 })

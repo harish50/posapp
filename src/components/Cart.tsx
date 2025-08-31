@@ -15,7 +15,7 @@ export default function Cart() {
       id: Date.now().toString(),
       items: cart,
       status: "Ordered",
-      synced: false,
+      synced: "false",
       createdAt: new Date().toISOString(),
     };
     await orderCtx.placeOrder(order);
